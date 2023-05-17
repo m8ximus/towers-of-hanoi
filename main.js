@@ -1,22 +1,28 @@
-const board = 
-[[5, 4, 3, 2, 1],
-[],
-[]];
-
-var newBoard = JSON.parse(JSON.stringify(board))
-
-
-const checkWinner = function(currBoard) {
-    if (currBoard[2].join("") === board[0].join("") || currBoard[1].join("") === board[0].join("")) {
+const board = {
+pegs: [[5, 4, 3, 2, 1],[],[]],
+plays: 0,
+originalPegs: null,
+checkWinner() {
+    if (this.pegs[2].join("") === this.originalPegs[0].join("") || this.pegs[1].join("") === this.originalPegs[0].join("")) {
         console.log("Congrats! You WON!!! Game resetting..")
-        newBoard = JSON.parse(JSON.stringify(board))
+        this.pegs = this.originalPegs
+        this.printBoard()
     }
-}
-const moveDisc = function (start, move) {
-    let moveLength = newBoard[move - 1].length - 1
-    let startLength = newBoard[start - 1].length - 1
-    const findStart = newBoard[start - 1][startLength]
-    const findMove = newBoard[move - 1][moveLength]
+},
+printBoard() {
+    this.pegs.forEach((x) =>{ 
+        console.log("---" + x.join(" "))
+    })
+},
+createOriginalPegs() {
+    return this.pegs.map((x)=> {
+        return x.map((x) => x)
+    })
+},
+moveDisc(start, move) {
+    this.originalPegs = this.createOriginalPegs()
+    const findStart = this.pegs[start - 1][this.pegs[start - 1].length - 1]
+    const findMove = this.pegs[move - 1][this.pegs[move - 1].length - 1]
     
     
     if (findStart > 0) {
@@ -24,22 +30,15 @@ const moveDisc = function (start, move) {
             console.log("You cannot move a larger disc on top of a smaller disc, The board has not changed")
         } else {
             console.log("Success! This is your new board!")
-            if (moveLength < 0) {
-                moveLength = 0
-            }
-            if (startLength < 0) {
-                startLength = 0
-            }
-            newBoard[move - 1].push(findStart)
-            newBoard[start - 1].pop()
-            checkWinner(newBoard)
+            this.pegs[move - 1].push(findStart)
+            this.pegs[start - 1].pop()
+            this.checkWinner()
         }
     } else {
         console.log("There's no disc there!")
     }
-    for (let i = 0; i < newBoard.length; i++) {
-        console.log("---" + newBoard[i].join(" "))
-    }
-    
+    this.printBoard()
 }
 
+}
+board.moveDisc(1,2)
